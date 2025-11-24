@@ -8,7 +8,7 @@ import tensorflow as tf
 from tensorflow import keras
 from tensorflow.keras import layers
 import seaborn as sns
-
+import matplotlib.ticker as mtick
 
 # User should update this path to their own dataset location
 DATA_DIR = r"E:\00. Master's in AI\Sem 1\AI\Project\code new\archive\HAM10000_metadata.csv"
@@ -98,16 +98,49 @@ efficientnet_model = create_efficientnet_model()
 history = run_experiment(efficientnet_model)
 
 # Plot training history
-def plot_history(history):
-    plt.plot(history.history['accuracy'], label='train_accuracy')
-    plt.plot(history.history['val_accuracy'], label='val_accuracy')
+# def plot_history(history):
+#     plt.plot(history.history['accuracy'], label='train_accuracy')
+#     plt.plot(history.history['val_accuracy'], label='val_accuracy')
+#     plt.xlabel('Epochs')
+#     plt.ylabel('Accuracy')
+#     plt.title('Training and Validation Accuracy')
+#     plt.legend()
+#     plt.show()
+
+# plot_history(history)
+
+# Print final epoch metrics in %
+train_acc = history.history['accuracy'][-1] * 100       # Convert to %
+val_acc = history.history['val_accuracy'][-1] * 100    # Convert to %
+val_loss = history.history['val_loss'][-1]             # Usually kept as-is
+
+print(f"Training Accuracy: {train_acc:.2f}%")
+print(f"Validation Accuracy: {val_acc:.2f}%")
+print(f"Validation Loss: {val_loss:.4f}")
+
+def plot_history_percent(history):
+    # Convert accuracy values to percentages (multiply by 100)
+    train_acc_pct = [x * 100 for x in history.history['accuracy']]
+    val_acc_pct = [x * 100 for x in history.history['val_accuracy']]
+    
+    epochs = range(1, len(train_acc_pct) + 1)
+
+    plt.figure(figsize=(10, 6))
+    plt.plot(epochs, train_acc_pct, label='Training Accuracy (%)')
+    plt.plot(epochs, val_acc_pct, label='Validation Accuracy (%)')
+    
     plt.xlabel('Epochs')
-    plt.ylabel('Accuracy')
-    plt.title('Training and Validation Accuracy')
+    plt.ylabel('Accuracy (%)')
+    plt.title('Training vs Validation Accuracy')
     plt.legend()
+    
+    # Format the Y-axis to show the % symbol
+    plt.gca().yaxis.set_major_formatter(mtick.PercentFormatter())
+    
+    plt.grid(True, alpha=0.3)
     plt.show()
 
-plot_history(history)
+plot_history_percent(history)
 
 # Visualize Confusion Matrix
 y_pred = np.argmax(efficientnet_model.predict(X_val), axis=1)

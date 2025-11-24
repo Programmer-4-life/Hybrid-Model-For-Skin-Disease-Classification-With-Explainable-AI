@@ -43,7 +43,7 @@ class SHAPExplainer:
             
         return probs
 
-    def explain(self, img_path, out_path='explainers_outputs'):
+    def explain(self, img_path, out_path='efficientNet_explainers_outputs'):
         os.makedirs(out_path, exist_ok=True)
         img_pil = load_image(img_path).resize((224, 224))
         img_np = np.array(img_pil)
@@ -101,7 +101,40 @@ class SHAPExplainer:
         
         print(f"[SHAP] Saved to {save_path}")
 
+#for 1 image testing
+# if __name__ == "__main__":
+#     TEST_IMG = r"E:\00. Master's in AI\Sem 1\AI\Project\code new\archive\HAM10000_images_part_1\ISIC_0024306.jpg"
+#     explainer = SHAPExplainer()
+#     explainer.explain(TEST_IMG)
+
+#for 5 images testing
 if __name__ == "__main__":
-    TEST_IMG = r"E:\00. Master's in AI\Sem 1\AI\Project\code new\archive\HAM10000_images_part_1\ISIC_0024306.jpg"
+    folder = r"E:\00. Master's in AI\Sem 1\AI\Project\code new\archive\HAM10000_images_part_1"
+
+    # Collect 5 image paths
+    image_paths = []
+    for f in os.listdir(folder):
+        if f.lower().endswith((".jpg", ".jpeg", ".png")):
+            image_paths.append(os.path.join(folder, f))
+        if len(image_paths) == 5:
+            break
+
     explainer = SHAPExplainer()
-    explainer.explain(TEST_IMG)
+
+    # Run SHAP on the 5 selected images
+    for img_path in image_paths:
+        print(f"\n===== Running SHAP on {os.path.basename(img_path)} =====")
+        explainer.explain(img_path)
+
+#for all images testing
+# if __name__ == "__main__":
+#     folder = r"E:\00. Master's in AI\Sem 1\AI\Project\code new\archive\HAM10000_images_part_1"
+
+#     images = [os.path.join(folder, f) 
+#               for f in os.listdir(folder) 
+#               if f.lower().endswith((".jpg", ".png", ".jpeg"))]
+
+#     explainer = SHAPExplainer()
+
+#     for img_path in images:
+#         explainer.run_on_image(img_path)

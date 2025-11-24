@@ -27,7 +27,7 @@ class GradCAMExplainer:
             mod = getattr(mod, p)
         return mod
 
-    def run_on_image(self, img_path, out_path='explainers_outputs'):
+    def run_on_image(self, img_path, out_path='efficientNet_explainers_outputs'):
         os.makedirs(out_path, exist_ok=True)
         img_pil = load_image(img_path).resize((224, 224))
         img_tensor = preprocess(img_pil).unsqueeze(0).to(self.device)
@@ -101,7 +101,40 @@ class GradCAMExplainer:
         fh.remove(); bh.remove()
         print(f"[Grad-CAM] Saved to {save_path}")
 
+#for 1 image testing
+# if __name__ == "__main__":
+#     TEST_IMG = r"E:\00. Master's in AI\Sem 1\AI\Project\code new\archive\HAM10000_images_part_1\ISIC_0024306.jpg"
+#     explainer = GradCAMExplainer()
+#     explainer.run_on_image(TEST_IMG)
+
+#for 5 images testing
 if __name__ == "__main__":
-    TEST_IMG = r"E:\00. Master's in AI\Sem 1\AI\Project\code new\archive\HAM10000_images_part_1\ISIC_0024306.jpg"
+    folder = r"E:\00. Master's in AI\Sem 1\AI\Project\code new\archive\HAM10000_images_part_1"
+
+    # Take first 5 images from folder
+    image_paths = []
+    for f in os.listdir(folder):
+        if f.lower().endswith((".jpg", ".png", ".jpeg")):
+            image_paths.append(os.path.join(folder, f))
+        if len(image_paths) == 5:
+            break
+
     explainer = GradCAMExplainer()
-    explainer.run_on_image(TEST_IMG)
+
+    for img_path in image_paths:
+        print(f"Running Grad-CAM on: {img_path}")
+        explainer.run_on_image(img_path)
+
+#for all images testing
+# if __name__ == "__main__":
+#     folder = r"E:\00. Master's in AI\Sem 1\AI\Project\code new\archive\HAM10000_images_part_1"
+
+#     images = [os.path.join(folder, f) 
+#               for f in os.listdir(folder) 
+#               if f.lower().endswith((".jpg", ".png", ".jpeg"))]
+
+#     explainer = GradCAMExplainer()
+
+#     for img_path in images:
+#         explainer.run_on_image(img_path)
+
